@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pencarian Rute Perjalanan</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-container,
+        .result-container {
+            flex: 1;
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            margin-right: 0;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        select {
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .result-container {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        img {
+            margin-top: 20px;
+            width: 100%; /* Menggunakan width: 100% agar tetap ukuran penuh */
+            border-radius: 5px;
+        }
+
+        p {
+            margin-top: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: center;
+        }
+
+        li {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        @media screen and (min-width: 600px) {
+            .container {
+                flex-direction: row;
+            }
+
+            .form-container,
+            .result-container {
+                margin-right: 20px;
+                margin-bottom: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h1>Pencarian Rute Perjalanan</h1>
+            <!-- Add a form for user input -->
+            <form method="post" action="/">
+                <label for="start_point">Start Point:</label>
+                <select name="start_point" id="start_point" required>
+                    {% for destination in destinations %}
+                    <option value="{{ destination }}" {% if destination == start_point %}selected{% endif %}>{{ destination }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="end_point">End Point:</label>
+                <select name="end_point" id="end_point" required>
+                    {% for destination in destinations %}
+                    <option value="{{ destination }}" {% if destination == end_point %}selected{% endif %}>{{ destination }}</option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit">Find Shortest Path</button>
+            </form>
+        </div>
+
+        <!-- Display the graph image and results -->
+        <div class="result-container">
+            {% if final_route %}
+            <img src="{{ url_for('static', filename='graph_image.png') }}" alt="Shortest Path Graph">
+            <p><strong>Rute Tercepat:</strong> {{ final_route.path }}</p>
+            <p><strong>Total Jarak Perjalanan:</strong> {{ final_route.total_distance }} km</p>
+            <p><strong>5 Destinasi Terdekat:</strong></p>
+            <ul>
+                {% for dest, distance in final_route.nearest_destinations %}
+                <li>{{ dest }} - Distance: {{ distance }} km</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>No valid path found from {{ start_point }} to {{ end_point }}.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+
+</html>
